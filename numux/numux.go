@@ -156,7 +156,10 @@ func ReplyJson(w http.ResponseWriter, v any) {
 	w.Write(data)
 }
 
-func ReplyErr(w http.ResponseWriter, code int, err any) {
+func ReplyErr(w http.ResponseWriter, code int, err any, args... any) {
+  if len(args) > 0 {
+    err = fmt.Sprintf(err.(string), args...)
+  }
   pcode := ParseErrCode(err)
   if pcode > 0 && pcode < code {
     code = pcode
@@ -166,8 +169,8 @@ func ReplyErr(w http.ResponseWriter, code int, err any) {
 	w.Write([]byte(fmt.Sprintf("%v", err)))
 }
 
-func (u *Nu) ReplyErr(code int, err any) {
-  ReplyErr(u.w, code, err)
+func (u *Nu) ReplyErr(code int, err any, args ...any) {
+  ReplyErr(u.w, code, err, args...)
 }
 
 func (u *Nu) ReplyJson(blob any) {
