@@ -174,6 +174,13 @@ func (u *Nu) ReplyJson(blob any) {
   ReplyJson(u.w, blob)
 }
 
+func (u *Nu) ReplyPlaintext(text string) {
+  u.w.Header().Add("Content-Type", "text/html; charset=utf-8")
+  data := []byte(text)
+  u.w.Header().Add("Content-Length", fmt.Sprintf("%v", len(data)))
+  u.w.Write(data)
+}
+
 func (u *Nu) ReplyHTMLErr(code int, err any) {
   u.w.Header().Add("Content-Type", "text/html; charset=utf-8")
   u.w.Write([]byte(fmt.Sprintf(`
