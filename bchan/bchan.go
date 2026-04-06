@@ -1,3 +1,7 @@
+// A `BucketedChannel` for converting an arbitrary channel of values into time-based batching ones.
+//
+// In plain english, this converts a `chan foo` into something that still looks like `chan foo` on
+// the sending side, but looks like `chan []foo` on the receiving side.
 package bchan
 
 import (
