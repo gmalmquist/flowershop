@@ -1,7 +1,7 @@
 package numux
 
 import (
-  "flowershop/regu"
+  "github.com/gmalmquist/flowershop/regu"
 
   "bytes"
   "fmt"
