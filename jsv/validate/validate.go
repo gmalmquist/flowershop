@@ -1,7 +1,7 @@
 package validate
 
 import (
-  "flowershop/jsv"
+  "github.com/gmalmquist/flowershop/jsv"
 
   "errors"
   "fmt"

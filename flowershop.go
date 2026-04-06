@@ -6,6 +6,7 @@ import (
   _ "github.com/gmalmquist/flowershop/dental"
   _ "github.com/gmalmquist/flowershop/iot"
   _ "github.com/gmalmquist/flowershop/jsv"
+  _ "github.com/gmalmquist/flowershop/jsv/validate"
   _ "github.com/gmalmquist/flowershop/numux"
   _ "github.com/gmalmquist/flowershop/regu"
 )
