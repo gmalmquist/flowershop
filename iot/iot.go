@@ -50,11 +50,11 @@ func Powerwrite(path string, data []byte) error {
 //
 // Useful for reading config files etc that are necessary on application startup.
 func MustRead(path string) []byte {
-  data, err := os.ReadFile(path)
-  if err != nil {
-    panic(err)
-  }
-  return data
+	data, err := os.ReadFile(path)
+	if err != nil {
+		panic(err)
+	}
+	return data
 }
 
 // Returns true if a file or directory exists at the given path.
@@ -120,33 +120,32 @@ func IterFiles(
 // If file extensions are provided as varargs in `exts`, only files with the given extensions
 // will be included.
 func IterPaths(
-  root string,
-  exts ...string,
+	root string,
+	exts ...string,
 ) func(yield func(string) bool) {
-  allowed := map[string]bool{}
-  for _, e := range exts {
-    s := strings.ToLower(e)
-    if s != "" && !strings.HasPrefix(s, ".") {
-      s = fmt.Sprintf(".%v", s)
-    }
-    allowed[s] = true
-  }
-  accept := func(e os.DirEntry) bool {
-    return len(allowed) == 0 || allowed[strings.ToLower(filepath.Ext(e.Name()))]
-  }
-  return func(yield func(string) bool) {
-    entries, err := os.ReadDir(root)
-    if err != nil {
-      return
-    }
-    for _, e := range entries {
-      if !accept(e) {
-        continue
-      }
-      if !yield(filepath.Join(root, e.Name())) {
-        return
-      }
-    }
-  }
+	allowed := map[string]bool{}
+	for _, e := range exts {
+		s := strings.ToLower(e)
+		if s != "" && !strings.HasPrefix(s, ".") {
+			s = fmt.Sprintf(".%v", s)
+		}
+		allowed[s] = true
+	}
+	accept := func(e os.DirEntry) bool {
+		return len(allowed) == 0 || allowed[strings.ToLower(filepath.Ext(e.Name()))]
+	}
+	return func(yield func(string) bool) {
+		entries, err := os.ReadDir(root)
+		if err != nil {
+			return
+		}
+		for _, e := range entries {
+			if !accept(e) {
+				continue
+			}
+			if !yield(filepath.Join(root, e.Name())) {
+				return
+			}
+		}
+	}
 }
-

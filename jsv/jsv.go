@@ -23,22 +23,22 @@ type JsonValue []byte
 type Validate func(JsonValue) error
 
 var falsies map[string]bool = func() map[string]bool {
-  arr := []string{"false", "", "[]", "{}", "0", "''", `""`, "null"}
-  m := map[string]bool{}
-  for _, x := range arr {
-    m[x] = true
-  }
-  return m
+	arr := []string{"false", "", "[]", "{}", "0", "''", `""`, "null"}
+	m := map[string]bool{}
+	for _, x := range arr {
+		m[x] = true
+	}
+	return m
 }()
 
 // Marshals this value to json using the standard library `encoding/json`, and wraps it in a
 // `JsonValue` type.
 func Marshal(ref any) (JsonValue, error) {
-  bytes, err := json.Marshal(ref)
-  if err != nil {
-    return nil, err
-  }
-  return JsonValue(bytes), err
+	bytes, err := json.Marshal(ref)
+	if err != nil {
+		return nil, err
+	}
+	return JsonValue(bytes), err
 }
 
 // Attempts to unmarshal the given JsonValue into the provided reference. An error will be
@@ -49,11 +49,11 @@ func (v JsonValue) Unmarshal(ref any) error {
 
 // Returns a new map by marshalling all the values in the input map.
 func MarshalMap(m map[string]any) (map[string]JsonValue, error) {
-  blob, err := Marshal(m)
-  if err != nil {
-    return nil, err
-  }
-  return blob.Map()
+	blob, err := Marshal(m)
+	if err != nil {
+		return nil, err
+	}
+	return blob.Map()
 }
 
 func (v JsonValue) nota(kind string) error {
@@ -83,12 +83,12 @@ func (v JsonValue) JSON() string {
 
 // Returns true if the JSON object looks falsey.
 func (v JsonValue) Falsey() bool {
-  return falsies[v.String()]
+	return falsies[v.String()]
 }
 
 // Returns true if the JSON object looks truthy.
 func (v JsonValue) Truthy() bool {
-  return !falsies[v.String()]
+	return !falsies[v.String()]
 }
 
 // Attempts to convert the underlying JSON value to an integer.
@@ -220,45 +220,44 @@ func (v JsonValue) IsBlank() bool {
 //
 // This only works on nested objects, not arrays.
 func (v JsonValue) Resolve(path string) (JsonValue, error) {
-  node := v
-  parts := strings.Split(path, ".")
-  sofar := ""
-  for _, part := range parts {
-    if part == "" {
-      continue
-    }
-    m, err := node.Map()
-    if err != nil {
-      return nil, fmt.Errorf("%v is not a map", sofar)
-    }
-    var ok bool
-    node, ok = m[part]
-    if !ok {
-      return nil, fmt.Errorf("%v.%v is nil", sofar, part)
-    }
-    sofar = fmt.Sprintf("%v.%v", sofar, part)
-  }
-  return node, nil
+	node := v
+	parts := strings.Split(path, ".")
+	sofar := ""
+	for _, part := range parts {
+		if part == "" {
+			continue
+		}
+		m, err := node.Map()
+		if err != nil {
+			return nil, fmt.Errorf("%v is not a map", sofar)
+		}
+		var ok bool
+		node, ok = m[part]
+		if !ok {
+			return nil, fmt.Errorf("%v.%v is nil", sofar, part)
+		}
+		sofar = fmt.Sprintf("%v.%v", sofar, part)
+	}
+	return node, nil
 }
 
 // Resolves a jq-esque `path` value, or the given default value if it is missing or blank.
 //
 // This only works on nested objects, not arrays.
 func (v JsonValue) ResolveOr(path string, defaultValue JsonValue) JsonValue {
-  r, e := v.Resolve(path)
-  if e != nil || r.IsBlank() {
-    return defaultValue
-  }
-  return r
+	r, e := v.Resolve(path)
+	if e != nil || r.IsBlank() {
+		return defaultValue
+	}
+	return r
 }
 
 // Returns this value if it is not blank, otherwise the provided default value.
 //
 // See `JsonValue.NotBlank`.
 func (v JsonValue) NotBlankOr(defaultValue JsonValue) JsonValue {
-  if v.IsBlank() {
-    return defaultValue
-  }
-  return v
+	if v.IsBlank() {
+		return defaultValue
+	}
+	return v
 }
-
