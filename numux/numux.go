@@ -299,7 +299,7 @@ func (u *Nu) Forward(method string, path string, args ...any) {
 	case "DELETE":
 		var b bytes.Buffer
 		u.r.Body = io.NopCloser(&b)
-		u.r.Header.Set("Content-Length", string(0))
+		u.r.Header.Set("Content-Length", strconv.Itoa(0))
 	}
 	u.mux.ServeHTTP(u.w, u.r)
 }
