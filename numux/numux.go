@@ -2,13 +2,16 @@ package numux
 
 import (
   "flowershop/regu"
-  "flowershop/iot"
 
   "bytes"
   "fmt"
   "io"
   "net/http"
   "regexp"
+  "strings"
+  "strconv"
+  "log"
+  "encoding/json"
 )
 
 type Nu struct {
@@ -115,7 +118,7 @@ func Wrap(mux *http.ServeMux) *NuMux {
 }
 
 func New() *NuMux {
-  return Wrap(http.ServeMux())
+  return Wrap(http.NewServeMux())
 }
 
 func HandleFunc(
@@ -154,7 +157,7 @@ func ReplyJson(w http.ResponseWriter, v any) {
 }
 
 func ReplyErr(w http.ResponseWriter, code int, err any) {
-  pcode := regu.ParseErrCode(err)
+  pcode := ParseErrCode(err)
   if pcode > 0 && pcode < code {
     code = pcode
   }
@@ -164,7 +167,7 @@ func ReplyErr(w http.ResponseWriter, code int, err any) {
 }
 
 func (u *Nu) ReplyErr(code int, err any) {
-  iot.ReplyErr(u.w, code, err)
+  ReplyErr(u.w, code, err)
 }
 
 func (u *Nu) ReplyJson(blob any) {
@@ -198,6 +201,11 @@ func (u *Nu) SetErrHeader(err any, args ...any) string {
   }
   u.SetHeader("X-Error-Message", msg)
   return msg
+}
+
+func (u *Nu) AddHeader(key string, val string) {
+  u.r.Header.Add(key, val)
+  u.w.Header().Add(key, val)
 }
 
 func (u *Nu) SetHeader(key string, val string) {
