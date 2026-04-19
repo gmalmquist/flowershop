@@ -57,6 +57,25 @@ func MustRead(path string) []byte {
 	return data
 }
 
+// Reads the entire file and memoizes it so the next read returns the same value
+// if it wasn't an error.
+var filecache = map[string][]byte{}
+func ReadMemo(path string) ([]byte, error) {
+  abs, err := filepath.Abs(path)
+  if err != nil {
+    return nil, fmt.Errorf("failed to get absolute path for '%v'", path)
+  }
+  if cached, ok := filecache[abs]; ok {
+    return cached, nil
+  }
+  data, err := os.ReadFile(path)
+  if err != nil {
+    return nil, err
+  }
+  filecache[abs] = data
+  return data, nil
+}
+
 // Returns true if a file or directory exists at the given path.
 func Exists(path string) bool {
 	_, err := os.Stat(path)
