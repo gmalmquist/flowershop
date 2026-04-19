@@ -196,7 +196,22 @@ func ReplyErr(w http.ResponseWriter, code int, err any, args ...any) {
 	w.Write([]byte(fmt.Sprintf("%v", err)))
 }
 
-// Send an plaintext error message with the given http error code.
+func ReplyHTML(w http.ResponseWriter, html string) {
+  res := []byte(html)
+  w.Header().Add("Content-Type", "text/html; charset=UTF-8")
+  w.Header().Add("Content-Length", fmt.Sprintf("%v", len(res)))
+  w.WriteHeader(200)
+  w.Write(res)
+}
+
+// Reply with a <script> tag that executes a browser redirect
+func ReplyHTMLRedirect(w http.ResponseWriter, uri string) {
+  ReplyHTML(w, fmt.Sprintf(strings.TrimSpace(`
+    <script>window.location.href = '%v';</script>
+  `), uri))
+}
+
+// Send a plaintext error message with the given http error code.
 func (u *Nu) ReplyErr(code int, err any, args ...any) {
 	ReplyErr(u.w, code, err, args...)
 }
@@ -216,15 +231,24 @@ func (u *Nu) ReplyPlaintext(text string) {
 	u.w.Write(data)
 }
 
+// Send a plaintext response.
+func (u *Nu) ReplyHTML(html string) {
+  ReplyHTML(u.w, html)
+}
+
+// Reply with a <script> tag that executes a browser redirect
+func (u *Nu) ReplyHTMLRedirect(uri string) {
+  ReplyHTMLRedirect(u.w, uri)
+}
+
 // Rather than sending an http error header, sends back formatted human-readable HTML.
 func (u *Nu) ReplyHTMLErr(code int, err any) {
-	u.w.Header().Add("Content-Type", "text/html; charset=utf-8")
-	u.w.Write([]byte(fmt.Sprintf(`
+	u.ReplyHTML(fmt.Sprintf(`
     <div class="error-message">
       <div class="error-code">%v</div>
       <pre class="error-body">%v</pre>
     </div>
-  `, code, err)))
+  `, code, err))
 }
 
 // Read the cookie from the request or return the default value.
